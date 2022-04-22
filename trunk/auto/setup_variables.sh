@@ -4,16 +4,21 @@
 OS_KERNEL_NAME=$(uname -s)
 OS_KERNRL_RELEASE=$(uname -r|awk -F '-' '{print $1}')
 OS_PREFIX="Platform"
+
+# Build platform cache.
 SRS_PLATFORM="${OS_PREFIX}-${OS_KERNEL_NAME}-${OS_KERNRL_RELEASE}"
 if [[ ${SRS_BUILD_TAG} != "" ]]; then
   SRS_PLATFORM="${SRS_PLATFORM}-${SRS_BUILD_TAG}"
 fi
+# Use isolate cache for different SRS version.
+SRS_PLATFORM="${SRS_PLATFORM}-SRS3"
+
 echo "SRS_WORKDIR: ${SRS_WORKDIR}, SRS_OBJS_DIR: ${SRS_OBJS_DIR}, SRS_OBJS: ${SRS_OBJS}, SRS_PLATFORM: ${SRS_PLATFORM}"
 
 # For src object files on each platform.
 (
-    cd ${SRS_OBJS_DIR} &&
-    rm -rf src utest srs research include lib srs_hls_ingester srs_mp4_parser &&
+    mkdir -p ${SRS_OBJS_DIR} && cd ${SRS_OBJS_DIR} &&
+    rm -rf src utest srs srs_utest research include lib srs_hls_ingester srs_mp4_parser &&
     mkdir -p ${SRS_PLATFORM}/src && ln -sf ${SRS_PLATFORM}/src &&
     mkdir -p ${SRS_PLATFORM}/utest && ln -sf ${SRS_PLATFORM}/utest &&
     mkdir -p ${SRS_PLATFORM}/research && ln -sf ${SRS_PLATFORM}/research &&

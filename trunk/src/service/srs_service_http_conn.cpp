@@ -124,7 +124,7 @@ srs_error_t SrsHttpParser::parse_message_imp(ISrsReader* reader)
             enum http_errno code;
 	        if ((code = HTTP_PARSER_ERRNO(&parser)) != HPE_OK) {
 	            return srs_error_new(ERROR_HTTP_PARSE_HEADER, "parse %dB, nparsed=%d, err=%d/%s %s",
-	                buffer->size(), consumed, http_errno_name(code), http_errno_description(code));
+	                buffer->size(), consumed, code, http_errno_name(code), http_errno_description(code));
 	        }
 
             // When buffer consumed these bytes, it's dropped so the new ptr is actually the HTTP body. But http-parser
@@ -531,19 +531,19 @@ string SrsHttpMessage::ext()
     return _ext;
 }
 
-int SrsHttpMessage::parse_rest_id(string pattern)
+string SrsHttpMessage::parse_rest_id(string pattern)
 {
     string p = _uri->get_path();
     if (p.length() <= pattern.length()) {
-        return -1;
+        return "";
     }
     
     string id = p.substr((int)pattern.length());
     if (!id.empty()) {
-        return ::atoi(id.c_str());
+        return id;
     }
     
-    return -1;
+    return "";
 }
 
 srs_error_t SrsHttpMessage::enter_infinite_chunked()

@@ -361,7 +361,7 @@ MockSrsCodec::~MockSrsCodec()
 {
 }
 
-int MockSrsCodec::nb_bytes()
+uint64_t MockSrsCodec::nb_bytes()
 {
     return 0;
 }
@@ -3713,11 +3713,11 @@ VOID TEST(KernelFileTest, FileWriteReader)
 }
 
 // Mock the system call hooks.
-extern _srs_open_t _srs_open_fn;
-extern _srs_write_t _srs_write_fn;
-extern _srs_read_t _srs_read_fn;
-extern _srs_lseek_t _srs_lseek_fn;
-extern _srs_close_t _srs_close_fn;
+extern srs_open_t _srs_open_fn;
+extern srs_write_t _srs_write_fn;
+extern srs_read_t _srs_read_fn;
+extern srs_lseek_t _srs_lseek_fn;
+extern srs_close_t _srs_close_fn;
 
 int mock_open(const char* /*path*/, int /*oflag*/, ...) {
 	return -1;
@@ -3742,13 +3742,13 @@ int mock_close(int /*fildes*/) {
 class MockSystemIO
 {
 private:
-	_srs_open_t oo;
-	_srs_write_t ow;
-	_srs_read_t _or;
-	_srs_lseek_t os;
-	_srs_close_t oc;
+	srs_open_t oo;
+	srs_write_t ow;
+	srs_read_t _or;
+	srs_lseek_t os;
+	srs_close_t oc;
 public:
-	MockSystemIO(_srs_open_t o = NULL, _srs_write_t w = NULL, _srs_read_t r = NULL, _srs_lseek_t s = NULL, _srs_close_t c = NULL) {
+	MockSystemIO(srs_open_t o = NULL, srs_write_t w = NULL, srs_read_t r = NULL, srs_lseek_t s = NULL, srs_close_t c = NULL) {
 		oo = _srs_open_fn;
 		ow = _srs_write_fn;
 		os = _srs_lseek_fn;
@@ -4209,7 +4209,7 @@ VOID TEST(KernelUtilityTest, CoverBitsBufferAll)
 }
 
 #ifndef SRS_AUTO_OSX
-extern _srs_gettimeofday_t _srs_gettimeofday;
+extern srs_gettimeofday_t _srs_gettimeofday;
 int mock_gettimeofday(struct timeval* /*tp*/, struct timezone* /*tzp*/) {
 	return -1;
 }
@@ -4217,9 +4217,9 @@ int mock_gettimeofday(struct timeval* /*tp*/, struct timezone* /*tzp*/) {
 class MockTime
 {
 private:
-	_srs_gettimeofday_t ot;
+	srs_gettimeofday_t ot;
 public:
-	MockTime(_srs_gettimeofday_t t = NULL) {
+	MockTime(srs_gettimeofday_t t = NULL) {
 		ot = _srs_gettimeofday;
 		if (t) {
 			_srs_gettimeofday = t;
@@ -4823,7 +4823,7 @@ VOID TEST(KernelMP4Test, CoverMP4CodecSingleFrame)
             HELPER_EXPECT_SUCCESS(enc.write_sample(
                 &fmt, SrsMp4HandlerTypeVIDE, fmt.video->frame_type, fmt.video->avc_packet_type, 0, 0, (uint8_t*)fmt.raw, fmt.nb_raw
             ));
-            EXPECT_EQ(768, enc.width); EXPECT_EQ(320, enc.height);
+            EXPECT_EQ(768, (int)enc.width); EXPECT_EQ(320, (int)enc.height);
         }
 
         if (true) {
@@ -4936,7 +4936,7 @@ VOID TEST(KernelMP4Test, CoverMP4MultipleVideos)
             HELPER_EXPECT_SUCCESS(enc.write_sample(
                 &fmt, SrsMp4HandlerTypeVIDE, fmt.video->frame_type, fmt.video->avc_packet_type, 0, 0, (uint8_t*)fmt.raw, fmt.nb_raw
             ));
-            EXPECT_EQ(768, enc.width); EXPECT_EQ(320, enc.height);
+            EXPECT_EQ(768, (int)enc.width); EXPECT_EQ(320, (int)enc.height);
         }
 
         if (true) {
@@ -5024,7 +5024,7 @@ VOID TEST(KernelMP4Test, CoverMP4MultipleCTTs)
             HELPER_EXPECT_SUCCESS(enc.write_sample(
                 &fmt, SrsMp4HandlerTypeVIDE, fmt.video->frame_type, fmt.video->avc_packet_type, 0, 0, (uint8_t*)fmt.raw, fmt.nb_raw
             ));
-            EXPECT_EQ(768, enc.width); EXPECT_EQ(320, enc.height);
+            EXPECT_EQ(768, (int)enc.width); EXPECT_EQ(320, (int)enc.height);
         }
 
         if (true) {
@@ -5126,7 +5126,7 @@ VOID TEST(KernelMP4Test, CoverMP4MultipleAVs)
             HELPER_EXPECT_SUCCESS(enc.write_sample(
                 &fmt, SrsMp4HandlerTypeVIDE, fmt.video->frame_type, fmt.video->avc_packet_type, 0, 0, (uint8_t*)fmt.raw, fmt.nb_raw
             ));
-            EXPECT_EQ(768, enc.width); EXPECT_EQ(320, enc.height);
+            EXPECT_EQ(768, (int)enc.width); EXPECT_EQ(320, (int)enc.height);
         }
 
         if (true) {
@@ -5240,7 +5240,7 @@ VOID TEST(KernelMP4Test, CoverMP4CodecErrorNoFrames)
             HELPER_EXPECT_SUCCESS(enc.write_sample(
                 &fmt, SrsMp4HandlerTypeVIDE, fmt.video->frame_type, fmt.video->avc_packet_type, 0, 0, (uint8_t*)fmt.raw, fmt.nb_raw
             ));
-            EXPECT_EQ(768, enc.width); EXPECT_EQ(320, enc.height);
+            EXPECT_EQ(768, (int)enc.width); EXPECT_EQ(320, (int)enc.height);
         }
 
         if (true) {
